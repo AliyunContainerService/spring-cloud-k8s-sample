@@ -1,0 +1,38 @@
+{{- $root := . -}}
+{{ $fullname := include "hystrix.fullname" . }}
+{{ $name := include "hystrix.name" . }}
+
+---
+{{ if .Values.config.existingConfigMapName }}
+{{ else }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}
+  labels:
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.spring.application.name }}
+data:
+  bootstrap.yaml: |+
+    server:
+      port: {{ .Values.service.internalPort }}
+    spring:
+      application:
+        name: {{ .Values.spring.application.name }}
+      cloud:
+        config:
+{{ if .Values.spring.cloud.config.enabled }}
+          enabled: {{ .Values.spring.cloud.config.enabled }}
+          uri: {{ required "A valid value of spring.cloud.config.uri is required!" .Values.spring.cloud.config.uri }}
+{{ else }}
+          enabled: false
+{{ end }}
+  application.yaml: |+
+    feign:
+      hystrix:
+        enabled: true
+{{ template "eurekaConfig" . }}
+
+{{ end }}
