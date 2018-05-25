@@ -1,0 +1,28 @@
+server:
+  port: ${SERVER_PORT:5678}
+
+feign:
+  hystrix:
+    enabled: true
+
+spring:
+  cloud:
+    config:
+      discovery:
+        enabled: false
+
+     
+eureka:
+  client:
+    enabled: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka/}
+  instance:
+    #hostname: ${HOSTNAME:localhost}
+    preferIpAddress: true
+
+#cloud:
+#  conablefig:
+#    failFast: true
+#    discovery:
+#      end: true
